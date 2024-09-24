@@ -12,17 +12,25 @@ module.exports = (originalLogSources, printer) => {
 
   while (logSources.length > 0) {
     let minDateInBatch = new Date();
-    for (let i = 0; i < logSources.length; i++) {
-      const logSource = logSources[i];
+
+    // Iterate over log sources, clearing empty ones along the way
+    logSources = logSources.filter((logSource) => {
+      // Filter out empty log sources
+      if (logSource.drained) {
+        return false;
+      }
+
+      // Process next entry
       const entry = logSource.pop();
       if (entry) {
+        // Keep track of the oldest log in the batch to drain the heap more efficiently
         if (entry && entry.date < minDateInBatch) minDateInBatch = entry.date;
+        // Add entry to the heap
         heap.add(entry);
       }
-    }
 
-    // Clear empty log sources
-    logSources = logSources.filter((logSource) => !logSource.drained);
+      return true;
+    });
 
     if (heap.size() > maxHeapSize) {
       maxHeapSize = heap.size();

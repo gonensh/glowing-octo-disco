@@ -17,15 +17,24 @@ const processAsyncLogs = async (originalLogSources, printer) => {
     const batch = logSources.map((logSource) => logSource.popAsync());
     const entries = await Promise.allSettled(batch);
 
-    entries.forEach(({ value: entry }) => {
+    // Iterate over log sources, clearing empty ones along the way
+    logSources = logSources.filter((logSource, i) => {
+      // Filter out empty log sources
+      if (logSource.drained) {
+        return false;
+      }
+
+      // Process next entry
+      const entry = entries[i]?.value;
       if (entry) {
+        // Keep track of the oldest log in the batch to drain the heap more efficiently
         if (entry && entry.date < minDateInBatch) minDateInBatch = entry.date;
+        // Add entry to the heap
         heap.add(entry);
       }
-    });
 
-    // Clear empty log sources
-    logSources = logSources.filter((logSource) => !logSource.drained);
+      return true;
+    });
 
     if (heap.size() > maxHeapSize) {
       maxHeapSize = heap.size();
