@@ -1,32 +1,11 @@
 'use strict';
 
 const { Heap } = require('heap-js');
+const drainHeap = require('./drain-heap');
 
 const DEBUG = process.env.DEBUG;
 
 // Print all entries, across all of the *async* sources, in chronological order.
-
-const drainHeap = ({ heap, maxDate, sizeThreshold = 5, printer }) => {
-  // Break if heap size is under threshold
-  if (heap.size() < sizeThreshold) return;
-  // Debug log
-  if (DEBUG) {
-    console.log(
-      `draining heap. size: ${heap.size()} maxDate: ${maxDate?.toISOString?.()} sizeThreshold: ${sizeThreshold}`
-    );
-  }
-  let i = 0;
-  // Print out all of the entries up to maxDate
-  while (!heap.isEmpty() && (!maxDate || heap.peek()?.date <= maxDate)) {
-    printer.print(heap.pop());
-    i++;
-  }
-  // Debug log
-  if (DEBUG) {
-    console.log(`drained log messages: ${i}`);
-  }
-};
-
 const processAsyncLogs = async (originalLogSources, printer) => {
   let logSources = [...originalLogSources];
   const heap = new Heap((a, b) => a.date.getTime() - b.date.getTime());
