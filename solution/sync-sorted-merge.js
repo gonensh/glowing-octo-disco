@@ -4,8 +4,7 @@ const drainHeap = require('./drain-heap');
 
 const DEBUG = process.env.DEBUG;
 
-// Print all entries, across all of the sources, in chronological order.
-module.exports = (originalLogSources, printer) => {
+const processSyncLogs = (originalLogSources, printer) => {
   let logSources = [...originalLogSources],
     maxHeapSize = 0;
   const heap = new Heap((a, b) => a.date.getTime() - b.date.getTime());
@@ -44,5 +43,11 @@ module.exports = (originalLogSources, printer) => {
 
   printer.done();
   console.log(`Max heap size (sync): ${maxHeapSize}`);
-  return console.log('Sync sort complete.');
+};
+
+// Print all entries, across all of the sources, in chronological order.
+module.exports = (logSources, printer) => {
+  console.log('\nProcessing sync logs...');
+  processSyncLogs(logSources, printer);
+  return console.log('\nSync sort complete.');
 };

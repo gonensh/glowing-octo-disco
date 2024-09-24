@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-const LogSource = require("./lib/log-source");
-const Printer = require("./lib/printer");
+const LogSource = require('./lib/log-source');
+const Printer = require('./lib/printer');
 
 function runSolutions(sourceCount) {
   return new Promise((resolve, reject) => {
@@ -30,7 +30,7 @@ function runSolutions(sourceCount) {
       syncLogSources.push(new LogSource());
     }
     try {
-      require("./solution/sync-sorted-merge")(syncLogSources, new Printer());
+      require('./solution/sync-sorted-merge')(syncLogSources, new Printer());
       resolve();
     } catch (e) {
       reject(e);
@@ -54,7 +54,7 @@ function runSolutions(sourceCount) {
       for (let i = 0; i < sourceCount; i++) {
         asyncLogSources.push(new LogSource());
       }
-      require("./solution/async-sorted-merge")(asyncLogSources, new Printer())
+      require('./solution/async-sorted-merge')(asyncLogSources, new Printer())
         .then(resolve)
         .catch(reject);
     });
@@ -62,4 +62,10 @@ function runSolutions(sourceCount) {
 }
 
 // Adjust this input to see how your solutions perform under various loads.
-runSolutions(100);
+const sourceCount = parseInt(process.argv[2]);
+if (sourceCount > 0) {
+  console.log(`Specified source count: ${sourceCount}`);
+  runSolutions(sourceCount);
+} else {
+  runSolutions(100);
+}

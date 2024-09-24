@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "debug": "DEBUG=true node index.js",
+    "benchmark": "BENCHMARK=true node index.js",
     "test": "./node_modules/jest/bin/jest.js"
   },
   "license": "BSD-2-Clause",

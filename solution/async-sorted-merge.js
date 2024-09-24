@@ -53,8 +53,9 @@ const processAsyncLogs = async (originalLogSources, printer) => {
 
 module.exports = (logSources, printer) => {
   return new Promise((resolve, reject) => {
+    console.log('\nProcessing async logs...');
     processAsyncLogs(logSources, printer).then(() => {
-      resolve(console.log('Async sort complete.'));
+      resolve(console.log('\nAsync sort complete.'));
     });
   });
 };

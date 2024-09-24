@@ -2,35 +2,53 @@
 
 # Seso Engineering | Challenge: Log Sorting
 
-<br>
+# Solution by Gonen Shoham
 
-## Instructions
+## Usage
 
-We have a number of [**log sources**](https://github.com/sesolabor/glowing-octo-disco/blob/master/lib/log-source.js). Each log source contains N log entries. Each entry is a javascript object with a timestamp and message. We don't know the number of log entries each source contains - however - we do know that the entries within each source are sorted 🕒 **chronologically** 🕒.
+### Benchmark mode (recommended)
 
-### The Objectives:
+`npm run benchmark [number of log sources]`
 
-1. **_Drain all of the log sources_** for both the synchronous and asynchronous solutions.
-   - [Synchronous](https://github.com/sesolabor/glowing-octo-disco/blob/31313e303c53cebb96fa02f3aab473dd011e1d16/lib/log-source.js#L37)
-   - [Asynchronous](https://github.com/sesolabor/glowing-octo-disco/blob/31313e303c53cebb96fa02f3aab473dd011e1d16/lib/log-source.js#L45)
-1. Print all of the entries, across all of the sources, in chronological order.
-   - We don't need to store the log entries, just print them to stdout.
-1. Do this _efficiently_. There are time and space complexities afoot!
+- To simplify testing, you can use `npm run benchmark 1000` where 1000 is the number of log sources to be used.
+- Benchmark mode will display stats while avoiding log output to stdout.
+- Sample output:
 
-We expect candidates to spend 1-3 hours on this exercise.
+```
+Specified source count: 10000
 
-**We want to see you flex your CS muscles!!! Use the appropriate data structures to satisfy the time and space complexities inherent to the problem!!!**
+Processing sync logs...
 
-## Pointers & Callouts
+***********************************
+Logs printed:            2397682
+Time taken (s):          14.56
+Logs/s:                  164675.961
+***********************************
 
-- We don't know how many logs each source contains. A source could contain millions of entries and be exabytes in size! In other words, reading the entirety of a log source into memory won't work well.
-- Log sources could contain logs from last year, from yesterday, even from 100 years ago. We won't know the timeframe of a log source until we start looking.
-- Consider what would happen when asked to merge 1 million log sources. Where might bottlenecks arise?
+Max heap size (sync): 748807
 
-There are two parts of the challenge which you'll see when diving into things. You can get started by running `npm start`.
+Sync sort complete.
 
-## Submitting
+Processing async logs...
 
-Create a GitHub repo and email your point of contact the link.
+***********************************
+Logs printed:            2392631
+Time taken (s):          19.894
+Logs/s:                  120268.975
+***********************************
 
-If - for whatever reason - you cannot create a GitHub repo for this challenge, it is also acceptable to 'zip' the directory and provide your submission as an email attachment.
+Max heap size (async): 767491
+
+Async sort complete.
+```
+
+### Debug mode
+
+`npm run debug [number of log sources]`
+
+- To get granular logging at each log heap drain cycle, you can use `npm run debug`
+- Debug mode will add verbose logging at each log heap drain cycle, giving you insights into the workings of the algorithms
+
+### Standard mode
+
+`npm start`
