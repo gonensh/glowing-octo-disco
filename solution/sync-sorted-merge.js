@@ -6,7 +6,8 @@ const DEBUG = process.env.DEBUG;
 
 // Print all entries, across all of the sources, in chronological order.
 module.exports = (originalLogSources, printer) => {
-  let logSources = [...originalLogSources];
+  let logSources = [...originalLogSources],
+    maxHeapSize = 0;
   const heap = new Heap((a, b) => a.date.getTime() - b.date.getTime());
 
   while (logSources.length > 0) {
@@ -23,6 +24,10 @@ module.exports = (originalLogSources, printer) => {
     // Clear empty log sources
     logSources = logSources.filter((logSource) => !logSource.drained);
 
+    if (heap.size() > maxHeapSize) {
+      maxHeapSize = heap.size();
+    }
+
     drainHeap({ heap, maxDate: minDateInBatch, sizeThreshold: 10, printer });
   }
 
@@ -30,5 +35,6 @@ module.exports = (originalLogSources, printer) => {
   drainHeap({ heap, maxDate: null, sizeThreshold: 0, printer });
 
   printer.done();
+  console.log(`Max heap size (sync): ${maxHeapSize}`);
   return console.log('Sync sort complete.');
 };
