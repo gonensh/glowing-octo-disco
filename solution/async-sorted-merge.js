@@ -19,11 +19,6 @@ const processAsyncLogs = async (originalLogSources, printer) => {
 
     // Iterate over log sources, clearing empty ones along the way
     logSources = logSources.filter((logSource, i) => {
-      // Filter out empty log sources
-      if (logSource.drained) {
-        return false;
-      }
-
       // Process next entry
       const entry = entries[i]?.value;
       if (entry) {
@@ -31,6 +26,11 @@ const processAsyncLogs = async (originalLogSources, printer) => {
         if (entry && entry.date < minDateInBatch) minDateInBatch = entry.date;
         // Add entry to the heap
         heap.add(entry);
+      }
+
+      // Filter out empty log sources
+      if (logSource.drained) {
+        return false;
       }
 
       return true;

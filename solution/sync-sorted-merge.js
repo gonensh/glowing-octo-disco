@@ -15,11 +15,6 @@ module.exports = (originalLogSources, printer) => {
 
     // Iterate over log sources, clearing empty ones along the way
     logSources = logSources.filter((logSource) => {
-      // Filter out empty log sources
-      if (logSource.drained) {
-        return false;
-      }
-
       // Process next entry
       const entry = logSource.pop();
       if (entry) {
@@ -29,6 +24,11 @@ module.exports = (originalLogSources, printer) => {
         heap.add(entry);
       }
 
+      // Filter out empty log sources
+      if (logSource.drained) {
+        return false;
+      }
+
       return true;
     });
 
@@ -36,7 +36,7 @@ module.exports = (originalLogSources, printer) => {
       maxHeapSize = heap.size();
     }
 
-    drainHeap({ heap, maxDate: minDateInBatch, sizeThreshold: 10, printer });
+    drainHeap({ heap, maxDate: minDateInBatch, sizeThreshold: 10000, printer });
   }
 
   // Drain the rest of the heap
