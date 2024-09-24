@@ -1,6 +1,7 @@
 'use strict';
-
 const { Heap } = require('heap-js');
+
+const DEBUG = process.env.DEBUG;
 
 // Print all entries, across all of the sources, in chronological order.
 module.exports = (originalLogSources, printer) => {
@@ -8,29 +9,24 @@ module.exports = (originalLogSources, printer) => {
   const heap = new Heap((a, b) => a.date.getTime() - b.date.getTime());
 
   const drainHeap = (heap, maxDate, sizeThreshold = 5) => {
+    // Break if heap size is under threshold
     if (heap.size() < sizeThreshold) return;
-    console.log(
-      `draining heap. size: ${heap.size()} maxDate: ${maxDate} sizeThreshold: ${sizeThreshold}`
-    );
+    // Debug log
+    if (DEBUG)
+      console.log(
+        `draining heap. size: ${heap.size()} maxDate: ${maxDate?.toISOString?.()} sizeThreshold: ${sizeThreshold}`
+      );
+    let i = 0;
     // Print out all of the entries up to maxDate
-    let entry = heap.poll();
-    while (
-      !heap.isEmpty() &&
-      entry?.date &&
-      (!maxDate || entry.date <= maxDate)
-    ) {
-      printer.print(entry);
-      entry = heap.poll();
+    while (!heap.isEmpty() && (!maxDate || heap.peek()?.date <= maxDate)) {
+      printer.print(heap.pop());
+      i++;
     }
+    // Debug log
+    if (DEBUG) console.log(`${i} log messages drained`);
   };
 
-  while (true) {
-    if (logSources.length === 0) {
-      drainHeap(heap, null, 0);
-      printer.done();
-      break;
-    }
-
+  while (logSources.length > 0) {
     let minDateInBatch = new Date();
     for (let i = 0; i < logSources.length; i++) {
       const logSource = logSources[i];
@@ -44,8 +40,12 @@ module.exports = (originalLogSources, printer) => {
     // Clear empty log sources
     logSources = logSources.filter((logSource) => !logSource.drained);
 
-    drainHeap(heap, minDateInBatch);
+    drainHeap(heap, minDateInBatch, 10);
   }
 
+  // Drain the rest of the heap
+  drainHeap(heap, null, 0);
+
+  printer.done();
   return console.log('Sync sort complete.');
 };
